@@ -26,3 +26,4 @@ test:	all
 	python -c 'import repeat; print dir(repeat); help(repeat)' | cat
 	valgrind python testwoexp.py
 	python -c 'import woexp; print dir(woexp); help(woexp)' | cat
+	valgrind ./list abadsf asdf \(1,2,3\), 1, 4 1 4 3
