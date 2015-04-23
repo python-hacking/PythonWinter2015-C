@@ -23,12 +23,8 @@ cdef extern from "bits/stat.h":
         long int __unused[3]
 
 cdef extern from "ftw.h":
-    cdef struct FTW:
-        int base
-        int level
-
     ctypedef int (*ftw_func_t) (const char *filename,
-                                  const stat *status,
-                                  int flag)
+                                const stat *status,
+                                int flag)
 
     int ftw (const char *dr, ftw_func_t func, int descriptors)
