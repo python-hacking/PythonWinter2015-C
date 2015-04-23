@@ -13,18 +13,29 @@ cpdef enum:
 cdef class WordExp:
     'wordexp.h wrapper class'
     cdef woexp.wordexp_t data
+    cpdef char allocated
 
     def __init__(self, char *s, int flags=0):
         '''__init__(s, flags)\n\nPerform wordexp(s, self.data, flags)'''
+        self.allocated = False
         self.expand(s, flags&~WRDE_REUSE)
 
-    def __dealloc__(self):
+    def free(self):
         woexp.wordfree(&self.data)
+        self.allocated = False
+
+    def __dealloc__(self):
+        if self.allocated:
+            self.free()
 
     def expand(self, char *s, int flags=WRDE_REUSE):
         '''expand(s, flags=WRDE_REUSE)\n\nPerform wordexp(s, self.data, flags)'''
+        if not (flags & WRDE_REUSE) and self.allocated:
+            self.free()
         if woexp.wordexp(s, &self.data, flags):
             raise MemoryError("Cannot perform expansion")
+        else:
+            self.allocated = True
 
     def result(self):
         '''result()\n\nReturn list of filenames.'''
